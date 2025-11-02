@@ -1,1 +1,5 @@
-venv/
+venv2/
+
+__pycache__/
+
+pjsimulador-firebase-adminsdk-fbsvc-39df483558.json
