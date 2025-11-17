@@ -3,9 +3,13 @@ from datetime import datetime
 
 
 def criar_empresa(dados):
+    import random
+    empresas_ref = db.collection("empresas")
+    codigo = str(random.randint(1000, 9999))  # Código de 4 dígitos, ex: 1234
+
     empresa = {
         "nome": dados.get("nome"),
-        "codigo": dados.get("codigo"),
+        "codigo": codigo,
         "logo_url": dados.get("logo_url"),
         "papel_fundo_url": dados.get("papel_fundo_url"),
         "cor_primaria": dados.get("cor_primaria"),
@@ -13,9 +17,10 @@ def criar_empresa(dados):
         "data_criacao": dados.get("data_criacao") or datetime.utcnow().isoformat(),
     }
 
-    doc_ref = db.collection("empresas").add(empresa)
+    doc_ref = empresas_ref.add(empresa)
     empresa_id = doc_ref[1].id
-    return {"id": empresa_id, **empresa}
+    empresas_ref.document(empresa_id).update({"id": empresa_id})
+    return {"id": empresa_id, "codigo": codigo, **empresa}
 
 
 def buscar_empresa_por_codigo(codigo):

@@ -13,8 +13,12 @@ def listar_mensagens(processo_id=None):
 
 
 def criar_mensagem(dados, processo_id=None, garantir_lista_dest=True):
+    import random
     mensagens_ref = _get_collection(processo_id)
-    doc_ref = mensagens_ref.document()
+    codigo = str(random.randint(100000, 999999))
+
+    doc_ref = mensagens_ref.add({})
+    mensagem_id = doc_ref[1].id
 
     destinatario = dados.get("destinatario", [])
     if garantir_lista_dest:
@@ -26,17 +30,19 @@ def criar_mensagem(dados, processo_id=None, garantir_lista_dest=True):
         destinatarios = destinatario
 
     dados_mensagem = {
+        "codigo": codigo,
         "autor": dados.get("autor"),
         "conteudo": dados.get("conteudo"),
         "dataEnvio": dados.get("dataEnvio"),
-        "tipo": dados.get("tipo"),         
+        "tipo": dados.get("tipo"),
         "anexos": dados.get("anexos", []),
         "destinatario": destinatarios,
-        "processoId": processo_id,
+        "processoId": processo_id
     }
 
-    doc_ref.set(dados_mensagem)
-    return {"id": doc_ref.id, **dados_mensagem}
+    mensagens_ref.document(mensagem_id).set({**dados_mensagem, "id": mensagem_id})
+    return {"id": mensagem_id, "codigo": codigo, **dados_mensagem}
+
 
 
 def obter_mensagem_por_id(mensagem_id, processo_id=None):

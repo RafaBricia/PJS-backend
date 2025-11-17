@@ -1,14 +1,19 @@
 from app.firebase_config import db
 
 def criar_processo(dados):
-    """Cria um novo processo, aceitando lista de alunos."""
-    doc_ref = db.collection("processos").document()
+    import random
+    processos_ref = db.collection("processos")
+    codigo = str(random.randint(1000, 9999))  # Ex: 4321
+
+    doc_ref = processos_ref.add({})
+    processo_id = doc_ref[1].id
 
     alunos = dados.get("alunos")
     if not isinstance(alunos, list):
-        alunos = [alunos] if alunos else [] 
+        alunos = [alunos] if alunos else []
 
     dados_processo = {
+        "codigo": codigo,
         "nomeProcesso": dados.get("nomeProcesso"),
         "dataInicial": dados.get("dataInicial"),
         "dataFinal": dados.get("dataFinal"),
@@ -16,12 +21,12 @@ def criar_processo(dados):
         "status": dados.get("status"),
         "descricao": dados.get("descricao"),
         "documento": dados.get("documento"),
-        "alunos": alunos, 
+        "alunos": alunos,
         "tipoProcesso": dados.get("tipoProcesso")
     }
 
-    doc_ref.set(dados_processo)
-    return {"id": doc_ref.id, **dados_processo}
+    processos_ref.document(processo_id).set({**dados_processo, "id": processo_id})
+    return {"id": processo_id, "codigo": codigo, **dados_processo}
 
 
 def atualizar_processo(processo_id, dados):

@@ -1,11 +1,18 @@
 from flask import Blueprint, request, jsonify
-from app.services.alunos_service import listar_alunos, criar_aluno, obter_aluno_por_id,atualizar_aluno,deletar_aluno
+from app.services.alunos_service import listar_alunos, criar_aluno, obter_aluno_por_id,atualizar_aluno,deletar_aluno, criar_alunos_lote
 
 alunos_bp = Blueprint('alunos', __name__)
 
 @alunos_bp.route('/alunos', methods=['GET'])
 def get_alunos():
     return jsonify(listar_alunos()), 200
+
+@alunos_bp.route("/alunos/lote", methods=["POST"])
+def upload_csv():
+    file = request.files["file"]
+    resultado = criar_alunos_lote(file)
+    return jsonify(resultado)
+
 
 @alunos_bp.route('/alunos', methods=['POST'])
 def post_aluno():
